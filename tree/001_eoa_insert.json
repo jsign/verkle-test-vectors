@@ -1,0 +1,9 @@
+{
+    "name": "Insert EOA with balance",
+    "description": "In an empty tree, insert a defined EOA address with a balance",
+    "testData": {
+        "eoaAddress": "TODO",
+        "balance": "TODO",
+        "expectedRootHash": "TODO"
+    }
+}
