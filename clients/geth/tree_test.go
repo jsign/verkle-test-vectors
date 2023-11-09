@@ -1,6 +1,7 @@
 package geth
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"io"
 	"math/big"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/ethereum/go-ethereum/trie/utils"
 	"github.com/gballet/go-verkle"
@@ -16,6 +18,8 @@ import (
 )
 
 func TestTree001(t *testing.T) {
+	t.Parallel()
+
 	type testType = struct {
 		Name        string `json:"name"`
 		Description string `json:"description"`
@@ -38,6 +42,42 @@ func TestTree001(t *testing.T) {
 		CodeHash: types.EmptyCodeHash[:],
 	}
 	err := tree.UpdateAccount(addr, &stateAccount)
+	require.NoError(t, err)
+
+	require.Equal(t, data.TestData.ExpectedRootHash, tree.Hash().Hex())
+}
+
+func TestTree002(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			SCAddress        string `json:"scAddress"`
+			Nonce            uint64 `json:"nonce"`
+			Balance          uint64 `json:"balance"`
+			HexCode          string `json:"hexCode"`
+			ExpectedRootHash string `json:"expectedRootHash"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../tree/002_sc_insert.json", &data)
+
+	tree := trie.NewVerkleTrie(verkle.New(), nil, utils.NewPointCache(), true)
+
+	addr := common.HexToAddress(data.TestData.SCAddress)
+	code, err := hex.DecodeString(data.TestData.HexCode[2:])
+	require.NoError(t, err)
+	codeHash := crypto.Keccak256Hash(code)
+	stateAccount := types.StateAccount{
+		Nonce:    data.TestData.Nonce,
+		Balance:  new(big.Int).SetUint64(data.TestData.Balance),
+		CodeHash: codeHash.Bytes(),
+	}
+	err = tree.UpdateAccount(addr, &stateAccount)
+	require.NoError(t, err)
+	err = tree.UpdateContractCode(addr, codeHash, code)
 	require.NoError(t, err)
 
 	require.Equal(t, data.TestData.ExpectedRootHash, tree.Hash().Hex())
