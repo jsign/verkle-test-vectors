@@ -1,9 +1,10 @@
 {
-    "name": "Insert EOA with balance",
-    "description": "In an empty tree, insert a defined EOA address with a balance",
+    "name": "Insert EOA",
+    "description": "In an empty tree, insert a defined EOA address with a nonce and balance",
     "testData": {
-        "eoaAddress": "TODO",
-        "balance": "TODO",
-        "expectedRootHash": "TODO"
+        "eoaAddress": "0x8dc286880de0cc507d96583b7c4c2b2b25239e58f8e67509b32edb5bbf293c",
+        "nonce": 32,
+        "balance": 8832,
+        "expectedRootHash": "0x4f552174cdd1e9a50b03edd879a8f650c7d28e8ab2dd9bd03be45749e4808b34"
     }
 }
