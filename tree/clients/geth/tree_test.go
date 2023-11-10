@@ -83,6 +83,37 @@ func TestTree002(t *testing.T) {
 	require.Equal(t, data.TestData.ExpectedRootHash, tree.Hash().Hex())
 }
 
+func TestTree003(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			Mutations []struct {
+				Key   string `json:"key"`
+				Value string `json:"value"`
+			} `json:"mutations"`
+			ExpectedRootHash string `json:"expectedRootHash"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../003_tree_mutation.json", &data)
+
+	rawTree := verkle.New()
+	for i := range data.TestData.Mutations {
+		key, err := hex.DecodeString(data.TestData.Mutations[i].Key[2:])
+		require.NoError(t, err)
+		val, err := hex.DecodeString(data.TestData.Mutations[i].Value[2:])
+		require.NoError(t, err)
+		err = rawTree.Insert(key, val, nil)
+		require.NoError(t, err)
+	}
+
+	got := rawTree.Commit().Bytes()
+	require.Equal(t, data.TestData.ExpectedRootHash[2:], hex.EncodeToString(got[:]))
+}
+
 func readTestFile(t *testing.T, testFilePath string, out interface{}) {
 	t.Helper()
 
