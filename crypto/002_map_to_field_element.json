@@ -1,0 +1,8 @@
+{
+    "name": "Map to field element",
+    "description": "Maps a Banderwagon point into a scalar field element",
+    "testData": {
+        "serializedPoint": "0x524996a95838712c4580220bb3de453d76cffd7f732f89914d4417bc8e99b513",
+        "fieldElement": "1602367074286641892936178194767539697052310289002448301322215915698370022151"
+    }
+}
