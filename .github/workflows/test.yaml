@@ -1,0 +1,24 @@
+name: Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.19.x, 1.20.x, 1.21.x]
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Test crypto
+        run: cd crypto/clients/go-ipa && go test ./... -race
+      - name: Test tree
+        run: cd tree/clients/geth && go test ./... -race
+
