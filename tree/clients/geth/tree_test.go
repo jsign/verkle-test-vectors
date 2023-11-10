@@ -31,7 +31,7 @@ func TestTree001(t *testing.T) {
 		} `json:"testData"`
 	}
 	var data testType
-	readTestFile(t, "../../tree/001_eoa_insert.json", &data)
+	readTestFile(t, "../../001_eoa_insert.json", &data)
 
 	tree := trie.NewVerkleTrie(verkle.New(), nil, utils.NewPointCache(), true)
 
@@ -62,7 +62,7 @@ func TestTree002(t *testing.T) {
 		} `json:"testData"`
 	}
 	var data testType
-	readTestFile(t, "../../tree/002_sc_insert.json", &data)
+	readTestFile(t, "../../002_sc_insert.json", &data)
 
 	tree := trie.NewVerkleTrie(verkle.New(), nil, utils.NewPointCache(), true)
 
