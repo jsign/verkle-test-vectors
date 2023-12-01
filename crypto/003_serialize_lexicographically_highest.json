@@ -1,0 +1,9 @@
+{
+    "name": "Serialize a valid point with Y lexicographically highest",
+    "description": "Serialize a valid point with Y lexicographically highest",
+    "testData": {
+        "serializedXCoordinate": "0x0e7e3748db7c5c999a7bcd93d71d671f1f40090423792266f94cb27ca43fce5c",
+        "serializedYCoordinate": "0x563a625521456130dc66f9fd6bda67330c7bb183b7f2223216c1c9536e1c622f",
+        "expectedSerializedPoint": "0x0e7e3748db7c5c999a7bcd93d71d671f1f40090423792266f94cb27ca43fce5c"
+    }
+}
