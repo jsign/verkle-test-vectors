@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"testing"
 
+	"github.com/crate-crypto/go-ipa/bandersnatch/fp"
 	"github.com/crate-crypto/go-ipa/bandersnatch/fr"
 	"github.com/crate-crypto/go-ipa/banderwagon"
 	"github.com/crate-crypto/go-ipa/ipa"
@@ -64,6 +66,40 @@ func Test002(t *testing.T) {
 	point.MapToScalarField(&got)
 
 	require.Equal(t, data.TestData.FieldElement, got.String())
+}
+
+func Test003(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			SerializeXCoordinate    string `json:"serializedXCoordinate"`
+			SerializeYCoordinate    string `json:"serializedYCoordinate"`
+			ExpectedSerializedPoint string `json:"expectedSerializedPoint"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../003_serialize_lexicographically_highest.json", &data)
+
+	fmt.Printf("aslkdjasda: %s\n", data.TestData.SerializeXCoordinate[2:])
+	xCoordBytes, err := hex.DecodeString(data.TestData.SerializeXCoordinate[2:])
+	require.NoError(t, err)
+	yCoordBytes, err := hex.DecodeString(data.TestData.SerializeYCoordinate[2:])
+	require.NoError(t, err)
+	var y fp.Element
+	y.SetBytes(yCoordBytes)
+	require.True(t, y.LexicographicallyLargest()) // Shouldn't be needed -- double-check test assumption.
+
+	var point banderwagon.Element
+	err = point.SetBytesUncompressed(append(xCoordBytes, yCoordBytes...), false) // Use false just to be sure.
+	require.NoError(t, err)
+
+	gotSerializedPoint := point.Bytes()
+	expSerializedPoint, err := hex.DecodeString(data.TestData.ExpectedSerializedPoint[2:])
+	require.NoError(t, err)
+	require.Equal(t, gotSerializedPoint[:], expSerializedPoint)
 }
 
 func readTestFile(t *testing.T, testFilePath string, out interface{}) {
