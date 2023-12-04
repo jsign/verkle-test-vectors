@@ -1,0 +1,7 @@
+{
+    "name": "Deserialize a point NOT in the curve",
+    "description": "Deserialize a point NOT in the curve (MUST fail)",
+    "testData": {
+        "serializedPoint": "0x219e524e9587de0f88e5051a8a90301c15743ba1866e17a236c5371967f73ead"
+    }
+}

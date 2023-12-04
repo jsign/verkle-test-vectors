@@ -133,6 +133,30 @@ func Test004(t *testing.T) {
 	require.Equal(t, gotSerializedPoint[:], expSerializedPoint)
 }
 
+func Test005(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			SerializedPoint string `json:"serializedPoint"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../005_deserialize_point_not_in_curve.json", &data)
+
+	serializedBytes, err := hex.DecodeString(data.TestData.SerializedPoint[2:])
+	require.NoError(t, err)
+
+	var point banderwagon.Element
+	// TODO: consider go-ipa returning wrapped-sentinel errors to be more specific
+	// about the error type.
+	if err := point.SetBytesUncompressed(serializedBytes, false); err == nil {
+		t.Fatalf("expected error, got nil")
+	}
+}
+
 func readTestFile(t *testing.T, testFilePath string, out interface{}) {
 	t.Helper()
 
