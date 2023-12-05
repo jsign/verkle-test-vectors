@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/crate-crypto/go-ipa/bandersnatch/fp"
@@ -176,6 +177,29 @@ func Test006(t *testing.T) {
 	var point banderwagon.Element
 	if err := point.SetBytesUncompressed(serializedBytes, false); err == nil {
 		t.Fatalf("expected error, got nil")
+	}
+}
+
+func Test007(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			SerializedPoint string `json:"serializedPoint"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../007_deserialize_point_x_bigger_than_field.json", &data)
+
+	serializedBytes, err := hex.DecodeString(data.TestData.SerializedPoint[2:])
+	require.NoError(t, err)
+
+	var point banderwagon.Element
+	err = point.SetBytes(serializedBytes)
+	if err == nil || !strings.Contains(err.Error(), "invalid compressed point") {
+		t.Fatalf("expected concrete error")
 	}
 }
 

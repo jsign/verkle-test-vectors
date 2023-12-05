@@ -1,0 +1,7 @@
+{
+    "name": "Deserialize a valid point but with an X coordinate bigger than field size",
+    "description": "Deserialize a valid point but with an X coordinate bigger than field size (e.g: adding MODULUS) (MUST fail)",
+    "testData": {
+        "serializedPoint": "0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000002"
+    }
+}
