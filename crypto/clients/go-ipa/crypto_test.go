@@ -108,9 +108,8 @@ func Test004(t *testing.T) {
 		Name        string `json:"name"`
 		Description string `json:"description"`
 		TestData    struct {
-			SerializeXCoordinate    string `json:"serializedXCoordinate"`
-			SerializeYCoordinate    string `json:"serializedYCoordinate"`
-			ExpectedSerializedPoint string `json:"expectedSerializedPoint"`
+			SerializeXCoordinate string `json:"serializedXCoordinate"`
+			SerializeYCoordinate string `json:"serializedYCoordinate"`
 		} `json:"testData"`
 	}
 	var data testType
@@ -126,12 +125,10 @@ func Test004(t *testing.T) {
 
 	var point banderwagon.Element
 	err = point.SetBytesUncompressed(append(xCoordBytes, yCoordBytes...), false) // Use false just to be sure.
-	require.NoError(t, err)
-
-	gotSerializedPoint := point.Bytes()
-	expSerializedPoint, err := hex.DecodeString(data.TestData.ExpectedSerializedPoint[2:])
-	require.NoError(t, err)
-	require.Equal(t, gotSerializedPoint[:], expSerializedPoint)
+	// Consider go-ipa returning wrapped-sentinel errors to be more specific.
+	if err == nil || !strings.Contains(err.Error(), "Y coordinate doesn't correspond to X") {
+		t.Fatalf("expected concrete error %s", err)
+	}
 }
 
 func Test005(t *testing.T) {
@@ -198,6 +195,7 @@ func Test007(t *testing.T) {
 
 	var point banderwagon.Element
 	err = point.SetBytes(serializedBytes)
+	// Consider go-ipa returning wrapped-sentinel errors to be more specific.
 	if err == nil || !strings.Contains(err.Error(), "invalid compressed point") {
 		t.Fatalf("expected concrete error")
 	}
@@ -222,6 +220,7 @@ func Test008(t *testing.T) {
 
 		var point banderwagon.Element
 		err = point.SetBytes(serializedBytes)
+		// Consider go-ipa returning wrapped-sentinel errors to be more specific.
 		if err == nil || !strings.Contains(err.Error(), "invalid compressed point") {
 			t.Fatalf("expected concrete error")
 		}
