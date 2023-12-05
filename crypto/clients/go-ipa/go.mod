@@ -3,7 +3,7 @@ module github.com/jsign/verkle-tests-vectors/go-ipa
 go 1.19
 
 require (
-	github.com/crate-crypto/go-ipa v0.0.0-20231025140028-3c0104f4b233
+	github.com/crate-crypto/go-ipa v0.0.0-20231205143816-408dbffb2041
 	github.com/stretchr/testify v1.8.2
 )
 
