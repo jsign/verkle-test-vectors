@@ -203,6 +203,31 @@ func Test007(t *testing.T) {
 	}
 }
 
+func Test008(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			SerializedPoints []string `json:"serializedPoint"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../008_deserialize_point_x_wrong_length.json", &data)
+
+	for _, serializedPoint := range data.TestData.SerializedPoints {
+		serializedBytes, err := hex.DecodeString(serializedPoint[2:])
+		require.NoError(t, err)
+
+		var point banderwagon.Element
+		err = point.SetBytes(serializedBytes)
+		if err == nil || !strings.Contains(err.Error(), "invalid compressed point") {
+			t.Fatalf("expected concrete error")
+		}
+	}
+}
+
 func readTestFile(t *testing.T, testFilePath string, out interface{}) {
 	t.Helper()
 

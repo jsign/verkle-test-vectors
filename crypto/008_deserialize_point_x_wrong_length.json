@@ -1,0 +1,11 @@
+{
+    "name": "Deserialize points with wrong length",
+    "description": "Deserialize points with wrong length (all MUST fail)",
+    "testData": {
+        "serializedPoints": [
+            "",
+            "0x1",
+            "0x010000307c7c28c054fce6df1717cd3df91b8109fb83ef6084e6aefffdcaaf00023552"
+        ]
+    }
+}
