@@ -157,6 +157,28 @@ func Test005(t *testing.T) {
 	}
 }
 
+func Test006(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			SerializedPoint string `json:"serializedPoint"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../006_deserialize_point_not_in_subgroup.json", &data)
+
+	serializedBytes, err := hex.DecodeString(data.TestData.SerializedPoint[2:])
+	require.NoError(t, err)
+
+	var point banderwagon.Element
+	if err := point.SetBytesUncompressed(serializedBytes, false); err == nil {
+		t.Fatalf("expected error, got nil")
+	}
+}
+
 func readTestFile(t *testing.T, testFilePath string, out interface{}) {
 	t.Helper()
 
