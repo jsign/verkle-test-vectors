@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"io"
@@ -8,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	multiproof "github.com/crate-crypto/go-ipa"
 	"github.com/crate-crypto/go-ipa/bandersnatch/fp"
 	"github.com/crate-crypto/go-ipa/bandersnatch/fr"
 	"github.com/crate-crypto/go-ipa/banderwagon"
@@ -224,6 +226,29 @@ func Test008(t *testing.T) {
 		if err == nil || !strings.Contains(err.Error(), "invalid compressed point") {
 			t.Fatalf("expected concrete error")
 		}
+	}
+}
+
+func Test009(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			SerializedProof string `json:"serializedProof"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../009_deserialize_proof_invalid_final_scalar.json", &data)
+
+	proofBytes, err := hex.DecodeString(data.TestData.SerializedProof[2:])
+	require.NoError(t, err)
+
+	var proof multiproof.MultiProof
+	// Consider go-ipa returning wrapped-sentinel errors to be more specific.
+	if err := proof.Read(bytes.NewReader(proofBytes)); err == nil || !strings.Contains(err.Error(), "failed to read A_scalar") {
+		t.Fatalf("expected concrete error")
 	}
 }
 
