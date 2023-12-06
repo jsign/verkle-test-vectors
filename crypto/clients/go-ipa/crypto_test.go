@@ -13,6 +13,7 @@ import (
 	"github.com/crate-crypto/go-ipa/bandersnatch/fp"
 	"github.com/crate-crypto/go-ipa/bandersnatch/fr"
 	"github.com/crate-crypto/go-ipa/banderwagon"
+	"github.com/crate-crypto/go-ipa/common"
 	"github.com/crate-crypto/go-ipa/ipa"
 	"github.com/stretchr/testify/require"
 )
@@ -274,6 +275,54 @@ func Test010(t *testing.T) {
 		if err := proof.Read(bytes.NewReader(proofBytes)); err == nil || !strings.Contains(err.Error(), "EOF") {
 			t.Fatalf("expected concrete error %s", err)
 		}
+	}
+}
+
+func Test011(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			ForgedEvaluationResult struct {
+				PedersenCommitment string `json:"pedersenCommitment"`
+				EvaluationPoint    int    `json:"evaluationPoint"`
+				EvaluationResultFr string `json:"evaluationResultFr"`
+				SerializedProof    string `json:"serializedProof"`
+			} `json:"forgedEvaluationResult"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../011_range_proof_verification.json", &data)
+
+	commitmentBytes, err := hex.DecodeString(data.TestData.ForgedEvaluationResult.PedersenCommitment[2:])
+	require.NoError(t, err)
+	var commitment banderwagon.Element
+	err = commitment.SetBytes(commitmentBytes)
+	require.NoError(t, err)
+
+	evaluationResultFr, err := hex.DecodeString(data.TestData.ForgedEvaluationResult.EvaluationResultFr[2:])
+	require.NoError(t, err)
+	var evalResult fr.Element
+	evalResult.SetBytes(evaluationResultFr)
+
+	serializedProof, err := hex.DecodeString(data.TestData.ForgedEvaluationResult.SerializedProof[2:])
+	require.NoError(t, err)
+
+	var proof multiproof.MultiProof
+	err = proof.Read(bytes.NewReader(serializedProof))
+	require.NoError(t, err)
+
+	config, err := ipa.NewIPASettings()
+	require.NoError(t, err)
+
+	// Walk the [0, 255] range and verify the proof fails for every evaluation point but the correct one.
+	for i := 0; i < 256; i++ {
+		transcript := common.NewTranscript("multiproof")
+		ok, err := multiproof.CheckMultiProof(transcript, config, &proof, []*banderwagon.Element{&commitment}, []*fr.Element{&evalResult}, []uint8{uint8(i)})
+		require.NoError(t, err)
+		require.True(t, ok == (i == data.TestData.ForgedEvaluationResult.EvaluationPoint))
 	}
 }
 
