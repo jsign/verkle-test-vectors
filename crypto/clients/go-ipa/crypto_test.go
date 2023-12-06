@@ -252,6 +252,31 @@ func Test009(t *testing.T) {
 	}
 }
 
+func Test010(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			SerializedProofs []string `json:"serializedProofs"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../010_deserialize_proof_wrong_length.json", &data)
+
+	for _, serializedProof := range data.TestData.SerializedProofs {
+		proofBytes, err := hex.DecodeString(serializedProof[2:])
+		require.NoError(t, err)
+
+		var proof multiproof.MultiProof
+		// Consider go-ipa returning wrapped-sentinel errors to be more specific.
+		if err := proof.Read(bytes.NewReader(proofBytes)); err == nil || !strings.Contains(err.Error(), "EOF") {
+			t.Fatalf("expected concrete error %s", err)
+		}
+	}
+}
+
 func readTestFile(t *testing.T, testFilePath string, out interface{}) {
 	t.Helper()
 
