@@ -326,6 +326,52 @@ func Test011(t *testing.T) {
 	}
 }
 
+func Test012(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			PedersenCommitment string `json:"pedersenCommitment"`
+			EvaluationPoint    int    `json:"evaluationPoint"`
+			EvaluationResultFr string `json:"evaluationResultFr"`
+			IPASerializedProof string `json:"ipaSerializedProof"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../012_in_domain_ipa_proof_verification.json", &data)
+
+	commitmentBytes, err := hex.DecodeString(data.TestData.PedersenCommitment[2:])
+	require.NoError(t, err)
+	var commitment banderwagon.Element
+	err = commitment.SetBytes(commitmentBytes)
+	require.NoError(t, err)
+
+	var evalPoint fr.Element
+	evalPoint.SetUint64(uint64(data.TestData.EvaluationPoint))
+
+	evaluationResultFr, err := hex.DecodeString(data.TestData.EvaluationResultFr[2:])
+	require.NoError(t, err)
+	var evalResult fr.Element
+	evalResult.SetBytes(evaluationResultFr)
+
+	serializedProof, err := hex.DecodeString(data.TestData.IPASerializedProof[2:])
+	require.NoError(t, err)
+
+	var proof ipa.IPAProof
+	err = proof.Read(bytes.NewReader(serializedProof))
+	require.NoError(t, err)
+
+	config, err := ipa.NewIPASettings()
+	require.NoError(t, err)
+
+	transcript := common.NewTranscript("ipa")
+	ok, err := ipa.CheckIPAProof(transcript, config, commitment, proof, evalPoint, evalResult)
+	require.NoError(t, err)
+	require.True(t, ok)
+}
+
 func readTestFile(t *testing.T, testFilePath string, out interface{}) {
 	t.Helper()
 
