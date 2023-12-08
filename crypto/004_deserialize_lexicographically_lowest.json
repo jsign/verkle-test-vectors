@@ -1,6 +1,6 @@
 {
-    "name": "Serialize a valid point with Y lexicographically lowest",
-    "description": "Serialize a valid point with Y lexicographically lowest (MUST fail)",
+    "name": "Deserialize a valid point with Y lexicographically lowest",
+    "description": "Deserialize a valid point with Y lexicographically lowest (MUST fail)",
     "testData": {
         "serializedXCoordinate": "0x158e524e9587de0f88e5051a8a90301c15743ba1866e17a236c5371967f73edb",
         "serializedYCoordinate": "0x26699ab9dfdba66d2ffe63f2d7c7ae0314afe4e7dcedac6dd65a87f58412ad91"

@@ -116,7 +116,7 @@ func Test004(t *testing.T) {
 		} `json:"testData"`
 	}
 	var data testType
-	readTestFile(t, "../../004_serialize_lexicographically_lowest.json", &data)
+	readTestFile(t, "../../004_deserialize_lexicographically_lowest.json", &data)
 
 	xCoordBytes, err := hex.DecodeString(data.TestData.SerializeXCoordinate[2:])
 	require.NoError(t, err)
