@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/ethereum/go-ethereum v1.13.4
-	github.com/gballet/go-verkle v0.1.1-0.20231025151349-87337dd2894a
+	github.com/ethereum/go-verkle v0.1.1-0.20240306133620-7d920df305f0
 	github.com/stretchr/testify v1.8.4
 )
 
@@ -22,7 +22,7 @@ require (
 	github.com/cockroachdb/redact v1.1.3 // indirect
 	github.com/consensys/bavard v0.1.13 // indirect
 	github.com/consensys/gnark-crypto v0.12.1 // indirect
-	github.com/crate-crypto/go-ipa v0.0.0-20231025140028-3c0104f4b233 // indirect
+	github.com/crate-crypto/go-ipa v0.0.0-20240223125850-b1e8a79f509c // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/getsentry/sentry-go v0.18.0 // indirect
@@ -61,4 +61,4 @@ require (
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
 
-replace github.com/ethereum/go-ethereum => github.com/gballet/go-ethereum v1.10.24-0.20231027111410-fc8f4b9b8b8c
+replace github.com/ethereum/go-ethereum => github.com/gballet/go-ethereum v1.10.24-0.20240326090205-43be114f3dfe
