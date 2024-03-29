@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/ethereum/go-ethereum/trie/utils"
 	"github.com/ethereum/go-verkle"
+	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/require"
 )
 
@@ -112,6 +113,35 @@ func TestTree003(t *testing.T) {
 
 	got := rawTree.Commit().Bytes()
 	require.Equal(t, data.TestData.ExpectedRootHash[2:], hex.EncodeToString(got[:]))
+}
+
+func TestTree004(t *testing.T) {
+	t.Parallel()
+
+	type testType = struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		TestData    struct {
+			SCAddress        string   `json:"scAddress"`
+			StorageSlots     []uint64 `json:"storageSlots"`
+			ExpectedRootHash string   `json:"expectedRootHash"`
+		} `json:"testData"`
+	}
+	var data testType
+	readTestFile(t, "../../004_storageslot_insert.json", &data)
+
+	tree := trie.NewVerkleTrie(verkle.New(), nil, utils.NewPointCache(), true)
+
+	addr := common.HexToAddress(data.TestData.SCAddress)
+	for _, ss := range data.TestData.StorageSlots {
+		var ssBi uint256.Int
+		ssBi.SetUint64(ss)
+		key := ssBi.Bytes()
+		err := tree.UpdateStorage(addr, key[:], []byte("elephant"))
+		require.NoError(t, err)
+	}
+
+	require.Equal(t, data.TestData.ExpectedRootHash, tree.Hash().Hex())
 }
 
 func readTestFile(t *testing.T, testFilePath string, out interface{}) {
