@@ -1,0 +1,19 @@
+{
+    "name": "Insert EOA",
+    "description": "In an empty tree, do many storage-slot writes for a contract and check the resulting root hash",
+    "testData": {
+        "scAddress": "0x3b7c4c2b2b25239e58f8e67509b32edb5bbf293c",
+        "storageSlots": [
+            0,
+            1,
+            31,
+            32,
+            63,
+            64,
+            100,
+            1000,
+            10001
+        ],
+        "expectedRootHash": "0x5f9b9b718f3658151bdc58e594a951787d0307467b13ea4d1cda411428216a1e"
+    }
+}
